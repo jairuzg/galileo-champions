@@ -1,0 +1,26 @@
+{
+  "name": "galileo-champions",
+  "version": "1.0.0",
+  "description": "Engineering software and cloud backend project, this is supposed to incentivate students motivation when attending lectures",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jairuzg/galileo-champions.git"
+  },
+  "author": "Jairo Guerra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jairuzg/galileo-champions/issues"
+  },
+  "homepage": "https://github.com/jairuzg/galileo-champions#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "mysql": "^2.18.1"
+  }
+}
