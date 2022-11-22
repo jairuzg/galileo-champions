@@ -9,7 +9,7 @@ const registerUser = async (req, res) => {
     if (!resp.error) {
         sendResponse(res, "User created successfully.");
     } else {
-        sendResponse(res, res.error.message, resp.error)
+        sendResponse(res, resp.error.message, resp.error)
     }
 }
 
