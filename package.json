@@ -17,10 +17,26 @@
   },
   "homepage": "https://github.com/jairuzg/galileo-champions#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
+    "memorystore": "^1.6.7",
+    "node-oauth2-server": "^2.4.0",
+    "passport-local": "^1.0.0",
+    "pug": "^3.0.2",
+    "sequelize": "^6.25.7",
+    "tiny-csrf": "^1.1.3"
   },
   "devDependencies": {
     "cors": "^2.8.5",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0"
   }
 }

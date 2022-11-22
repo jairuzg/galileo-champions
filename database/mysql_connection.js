@@ -8,4 +8,6 @@ const conn = mysql.createConnection({
     database: credentials.database
 });
 
-console.log(credentials);
+module.exports = {
+    connMysql: conn
+};
