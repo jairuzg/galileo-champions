@@ -2,7 +2,7 @@
   "name": "galileo-champions",
   "version": "1.0.0",
   "description": "Engineering software and cloud backend project, this is supposed to incentivate students motivation when attending lectures",
-  "main": "index.js",
+  "main": "gc-serve.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -30,7 +30,8 @@
     "passport-local": "^1.0.0",
     "pug": "^3.0.2",
     "sequelize": "^6.25.7",
-    "tiny-csrf": "^1.1.3"
+    "tiny-csrf": "^1.1.3",
+    "yargs": "^17.6.2"
   },
   "devDependencies": {
     "cors": "^2.8.5",

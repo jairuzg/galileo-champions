@@ -146,4 +146,5 @@ dist
 package-lock.json
 config/mysql_credentials.json
 config/googleCredentialsLocal.json
+config/googleSheetsAPICredentials.json
 .idea

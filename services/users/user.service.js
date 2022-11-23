@@ -1,5 +1,5 @@
 const {User} = require("../../models/user.model");
-const {SALT, STUDENT_ROLE, ADMIN_ROLE, LECTURER_ROLE} = require("../../common/constants");
+const {SALT, STUDENT_ROLE, ADMIN_ROLE, LECTURER_ROLE, EMAIL_PROVIDER} = require("../../common/constants");
 
 const bcryptjs = require('bcryptjs');
 const {Op} = require("sequelize");
@@ -97,8 +97,29 @@ const getRoleIdentifier = (roleName) => {
     }
 }
 
+const createAdminUser = async (email, firstname, lastname, password) => {
+    let error, adminUser;
+    try {
+        const hash = bcryptjs.hashSync(password, SALT);
+        adminUser = await User.create({
+            email: email,
+            firstname: firstname,
+            lastname: lastname,
+            password: hash,
+            isVerified: true,
+            provider: EMAIL_PROVIDER,
+            role: ADMIN_ROLE
+        });
+
+    } catch (e) {
+        error = e;
+    }
+    return {error, adminUser};
+};
+
 module.exports = {
     getUserByEmailAndPassword: getUserByEmailAndPassword,
     registerUser: registerUser,
-    searchStudentsByCriteria: searchStudentsByCriteria
+    searchStudentsByCriteria: searchStudentsByCriteria,
+    createAdminUser: createAdminUser
 };
