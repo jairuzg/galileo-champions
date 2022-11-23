@@ -1,14 +1,17 @@
 const {Sequelize, DataTypes, INTEGER, NOW} = require('sequelize');
-const {User} = require("./user.model");
-const {LecturerRedemptionCenter} = require("./lecturer_redemption_center.model");
 const creds = require('../config/mysql_credentials.json');
+const {ChampionPoints} = require("./champion_points.model");
 const sequelize = new Sequelize(`mysql://${creds.username}:${creds.password}@${creds.host}:${creds.port}/${creds.database}`)
 
-const LrcStudent = sequelize.define('LrcStudent', {
-    lrcs: {
+const ChampionPointsLog = sequelize.define('ChampionPointsLog', {
+    lrcsLog: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        field: 'lrcs_log'
+    },
+    lrcs: {
+        type: DataTypes.INTEGER,
     },
     lrc: {
         type: DataTypes.INTEGER,
@@ -30,6 +33,10 @@ const LrcStudent = sequelize.define('LrcStudent', {
         allowNull: false,
         default: 0
     },
+    reason: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
     modifiedBy: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -41,19 +48,13 @@ const LrcStudent = sequelize.define('LrcStudent', {
         field: 'modified_at'
     }
 }, {
-    tableName: 'lrc_student',
+    tableName: 'lrc_student_log',
     timestamps: false
 });
 
-LecturerRedemptionCenter.hasMany(LrcStudent, {sourceKey: 'lrc', foreignKey: 'lrc'});
-LrcStudent.belongsTo(LecturerRedemptionCenter, {foreignKey: 'lrc'});
-
-User.hasMany(LrcStudent, {sourceKey: 'email', foreignKey: 'student'});
-LrcStudent.belongsTo(User, {foreignKey: 'student'});
-
-User.hasMany(LrcStudent, {sourceKey: 'email', foreignKey: 'modifiedBy'});
-LrcStudent.belongsTo(User, {foreignKey: 'modifiedBy'});
+ChampionPoints.hasMany(ChampionPointsLog, {sourceKey: 'lrcs', foreignKey: 'lrcs'});
+ChampionPointsLog.belongsTo(ChampionPoints, {foreignKey: 'lrcs'});
 
 module.exports = {
-    LrcStudent: LrcStudent
+    ChampionPointsLog: ChampionPointsLog
 };

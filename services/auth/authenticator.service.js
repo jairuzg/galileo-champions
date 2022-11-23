@@ -1,5 +1,4 @@
 const userService = require('../users/user.service');
-const error = require("node-oauth2-server/lib/error");
 const jwt = require('jsonwebtoken');
 const {JWT_SECRET_KEY} = require("../../config/app_config");
 const {HTTP_STATUS} = require("../../common/constants");
@@ -35,10 +34,6 @@ const checkRequiredPermissions = (requiredPermissions) => {
             let err = new Error("Error: Insufficient permission to access this resource");
             err.code = HTTP_STATUS.UNAUTHORIZED;
             throw err;
-            // res.status(HTTP_STATUS.UNAUTHORIZED).json({
-            //     success: false,
-            //     message: "Error: Insufficient permission to access this resource"
-            // })
         } else {
             return next();
         }

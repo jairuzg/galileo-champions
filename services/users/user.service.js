@@ -2,6 +2,7 @@ const {User} = require("../../models/user.model");
 const {SALT, STUDENT_ROLE, ADMIN_ROLE, LECTURER_ROLE} = require("../../common/constants");
 
 const bcryptjs = require('bcryptjs');
+const {Op} = require("sequelize");
 
 const getUserByEmailAndPassword = async (email, password) => {
     let user, error;
@@ -46,6 +47,40 @@ const registerUser = async (user) => {
     return {error, registeredUser};
 }
 
+const searchUsersByCriteriaAndRole = async (criteria, role) => {
+    let error, users;
+    try {
+        const userModel = await User.findAll({
+            attributes: ['email', 'firstname', 'lastname'],
+            where: {
+                [Op.or]: [
+                    {email: {[Op.like]: `%${criteria}%`}},
+                    {firstname: {[Op.like]: `%${criteria}%`}},
+                    {lastname: {[Op.like]: `%${criteria}%`}},
+                ],
+                role: role
+            }
+        }, {plain: true});
+        if (userModel) users = userModel;
+        else error = new Error("Users not found with given criteria");
+    } catch (ex) {
+        error = ex;
+    }
+    return {error, users};
+}
+
+const searchStudentsByCriteria = async (criteria) => {
+    let error, students;
+    try {
+        const usersSearch = await searchUsersByCriteriaAndRole(criteria, STUDENT_ROLE);
+        if (!usersSearch.error) students = usersSearch.users
+        else error = new Error("Users not found");
+    } catch (ex) {
+        return error = ex;
+    }
+    return {error, students};
+}
+
 const getRoleIdentifier = (roleName) => {
     switch (roleName) {
         case 'student':
@@ -64,5 +99,6 @@ const getRoleIdentifier = (roleName) => {
 
 module.exports = {
     getUserByEmailAndPassword: getUserByEmailAndPassword,
-    registerUser: registerUser
+    registerUser: registerUser,
+    searchStudentsByCriteria: searchStudentsByCriteria
 };

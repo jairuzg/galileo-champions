@@ -16,7 +16,7 @@ const LecturerRedemptionCenter = sequelize.define('LecturerRedemptionCenter', {
         unique: 'lecturer'
     },
     redemptionCenter: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         field: 'redemption_center',
         allowNull: false,
         unique: 'lecturer'
