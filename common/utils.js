@@ -28,8 +28,12 @@ function getCurrentDateObject() {
     }
 }
 
+function getCurrentTimeInDBFormat() {
+    return new Date().toISOString().slice(0, 19).replace('T', ' ');
+}
 module.exports = {
     errorHandler: errorHandler,
     getEpochTime: getEpochTime,
-    getCurrentDateObject: getCurrentDateObject
+    getCurrentDateObject: getCurrentDateObject,
+    getCurrentTimeInDBFormat: getCurrentTimeInDBFormat
 };

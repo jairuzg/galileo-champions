@@ -2,7 +2,6 @@ const {Sequelize, DataTypes, INTEGER, NOW} = require('sequelize');
 const {User} = require("./user.model");
 const {LecturerRedemptionCenter} = require("./lecturer_redemption_center.model");
 const creds = require('../config/mysql_credentials.json');
-const {RedemptionCenter} = require("./redemption_center.model");
 const sequelize = new Sequelize(`mysql://${creds.username}:${creds.password}@${creds.host}:${creds.port}/${creds.database}`)
 
 const ChampionPoints = sequelize.define('ChampionPoints', {
