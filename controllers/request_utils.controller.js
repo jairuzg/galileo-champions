@@ -27,7 +27,7 @@ const respond = (res, obj, err) => {
     };
     if (err && err.errors) responseObj.errors = err.errors;
     if (obj && obj.data) responseObj.data = obj.data;
-    res.status((obj && obj.code) ? obj.code : err.code ? err.code : HTTP_STATUS.INTERNAL_SERVER_ERROR).json(responseObj);
+    res.status((obj && obj.code) ? obj.code : (err && err.code) ? err.code : HTTP_STATUS.INTERNAL_SERVER_ERROR).json(responseObj);
 }
 
 module.exports = {

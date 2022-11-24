@@ -1,8 +1,17 @@
 const {User} = require("../../models/user.model");
-const {SALT, STUDENT_ROLE, ADMIN_ROLE, LECTURER_ROLE, EMAIL_PROVIDER} = require("../../common/constants");
+const {
+    SALT,
+    STUDENT_ROLE,
+    ADMIN_ROLE,
+    LECTURER_ROLE,
+    EMAIL_PROVIDER,
+    HTTP_STATUS,
+    GOOGLE_PROVIDER
+} = require("../../common/constants");
 
 const bcryptjs = require('bcryptjs');
 const {Op} = require("sequelize");
+const {RequestError} = require("../../controllers/request_utils.controller");
 
 const getUserByEmailAndPassword = async (email, password) => {
     let user, error;
@@ -10,9 +19,11 @@ const getUserByEmailAndPassword = async (email, password) => {
         if (userModel) {
             if (bcryptjs.compareSync(password, userModel.password)) {
                 user = userModel;
+            } else {
+                throw new RequestError("Password doesn't match", {code: HTTP_STATUS.BAD_REQUEST})
             }
         } else {
-            throw new Error("User doesn't exist");
+            throw new RequestError("User doesn't exist", {code: HTTP_STATUS.NOT_FOUND});
         }
     }).catch(ex => {
         error = ex;
@@ -25,7 +36,10 @@ const registerUser = async (user) => {
     try {
         const existingUser = await User.findByPk(user.email);
         if (!existingUser) {
-            const hash = bcryptjs.hashSync(user.password, SALT);
+            const hash = user.password ? bcryptjs.hashSync(user.password, SALT) : null;
+            if (!user.password && user.provider !== GOOGLE_PROVIDER) {
+                throw new RequestError("Password can't be empty", {code: HTTP_STATUS.BAD_REQUEST});
+            }
             registeredUser = await User.create({
                 email: user.email,
                 firstname: user.firstname,
@@ -38,7 +52,7 @@ const registerUser = async (user) => {
             });
 
         } else {
-            error = new Error("User already exists");
+            error = new RequestError("User already exists", {code: HTTP_STATUS.CONFLICT});
         }
     } catch (ex) {
         error = ex;
@@ -117,9 +131,34 @@ const createAdminUser = async (email, firstname, lastname, password) => {
     return {error, adminUser};
 };
 
+const getUserByEmail = async (email) => {
+    let error, user;
+    try {
+        user = await User.findByPk(email);
+        if (!user) throw new RequestError("User doesn't exist", {code: HTTP_STATUS.NOT_FOUND});
+    } catch (e) {
+        error = e;
+    }
+    return {error, user};
+}
+
+const checkUserExists = async (email) => {
+    let error, userExists;
+    try {
+        const user = await User.findByPk(email);
+        if (user) userExists = true;
+        else throw new RequestError("User not found", {code: HTTP_STATUS.NOT_FOUND});
+    } catch (e) {
+        error = e;
+    }
+    return {error, userExists};
+};
+
 module.exports = {
     getUserByEmailAndPassword: getUserByEmailAndPassword,
     registerUser: registerUser,
     searchStudentsByCriteria: searchStudentsByCriteria,
-    createAdminUser: createAdminUser
+    createAdminUser: createAdminUser,
+    getUserByEmail: getUserByEmail,
+    checkUserExists: checkUserExists
 };

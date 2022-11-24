@@ -2,8 +2,9 @@ const {body, validationResult, query} = require("express-validator");
 const express = require('express');
 const userService = require('../services/users/user.service');
 const {GOOGLE_PROVIDER, HTTP_STATUS, LECTURER_ROLE, ADMIN_ROLE} = require("../common/constants");
-const {checkRequiredPermissions} = require("../services/auth/authenticator.service");
+const {checkRequiredPermissions, validateApiKey} = require("../services/auth/authenticator.service");
 const controllerUtils = require("./request_utils.controller");
+const reqUtils = require("./request_utils.controller");
 const userRouter = express.Router();
 
 module.exports = (app) => {
@@ -69,9 +70,37 @@ module.exports = (app) => {
         query('criteria').exists().withMessage("Field criteria is required").bail()
             .isString()
             .notEmpty().withMessage("Field criteria can't be empty"),
-        (req, res)=>{
+        (req, res) => {
             controllerUtils.validateRequest(req, res);
 
+        });
+
+    userRouter.get('/user/:email',
+        body('email').isEmail().withMessage("Must provide a valid email address"),
+        app.oauth.authorise(), checkRequiredPermissions([ADMIN_ROLE]),
+        (req, res, next) => {
+            reqUtils.validateRequest(req, res, next);
+            userService.getUserByEmail(req.body.email).then(getUserResp => {
+                if (!getUserResp.error) reqUtils.respond(res, {
+                    message: "Successfully fetched the user.",
+                    data: getUserResp.user,
+                    code: HTTP_STATUS.OK
+                }); else reqUtils.respond(res, null, getUserResp.error);
+            });
+        });
+
+    userRouter.post('/user-exists',
+        body('email').isEmail().withMessage("A valid email must be sent").exists(),
+        validateApiKey(), (req, res, next) => {
+            reqUtils.validateRequest(req, res, next);
+            userService.checkUserExists(req.body.email).then(checkResp => {
+                if (!checkResp.error && checkResp.userExists) reqUtils.respond(res, {
+                    message: "User exists",
+                    code: HTTP_STATUS.OK,
+                    data: checkResp.userExists
+                }); else reqUtils.respond(res, null, checkResp.error);
+
+            });
         });
 
     return userRouter;

@@ -1,6 +1,6 @@
 const userService = require('../users/user.service');
 const jwt = require('jsonwebtoken');
-const {JWT_SECRET_KEY} = require("../../config/app_config");
+const {JWT_SECRET_KEY, API_KEY} = require("../../config/app_config");
 const {HTTP_STATUS, SALT} = require("../../common/constants");
 const {getEpochTime, getCurrentTimeInDBFormat} = require("../../common/utils");
 const bcryptjs = require("bcryptjs");
@@ -46,6 +46,17 @@ const checkRequiredPermissions = (requiredPermissions) => {
     };
 };
 
+const validateApiKey = () => {
+    return (req, res, next) => {
+        const requestApiKey = req.headers['X-GC-API-KEY'] || req.headers['x-gc-api-key'];
+        if (requestApiKey && requestApiKey === API_KEY) {
+            return next();
+        } else {
+            throw new RequestError("Error: Insufficient permission to access this resource", {code: HTTP_STATUS.UNAUTHORIZED});
+        }
+    }
+};
+
 const extractPayload = (req) => {
     const authHeader = req.headers["authorization"] || req.headers["Authorization"];
     if (!(typeof authHeader === undefined)) {
@@ -53,7 +64,7 @@ const extractPayload = (req) => {
         const bearerToken = bearer[1];
         return jwt.verify(bearerToken, JWT_SECRET_KEY);
     }
-}
+};
 
 const generateResetPasswordHash = async (email, deviceName) => {
     let error, passwordReset;
@@ -76,7 +87,7 @@ const generateResetPasswordHash = async (email, deviceName) => {
         error = e;
     }
     return {error, passwordReset};
-}
+};
 
 const validateResetToken = async (token) => {
     let error, tokenIsValid;
@@ -100,7 +111,7 @@ const validateResetToken = async (token) => {
         error = e;
     }
     return {error, tokenIsValid};
-}
+};
 
 const resetPasswordByToken = async (password, token) => {
     let error, isPasswordReset;
@@ -124,12 +135,14 @@ const resetPasswordByToken = async (password, token) => {
         error = e;
     }
     return {error, isPasswordReset};
-}
+};
+
 module.exports = {
     registerUser: registerUser,
     login: login,
     checkRequiredPermissions: checkRequiredPermissions,
     generateResetPasswordHash: generateResetPasswordHash,
     validateResetToken: validateResetToken,
-    resetPasswordByToken: resetPasswordByToken
+    resetPasswordByToken: resetPasswordByToken,
+    validateApiKey: validateApiKey
 };
