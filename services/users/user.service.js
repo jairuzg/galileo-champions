@@ -10,14 +10,15 @@ const {
 } = require("../../common/constants");
 
 const bcryptjs = require('bcryptjs');
-const {Op} = require("sequelize");
+const {Op, Sequelize} = require("sequelize");
 const {RequestError} = require("../../controllers/request_utils.controller");
 
 const getUserByEmailAndPassword = async (email, password) => {
     let user, error;
     await User.findOne({where: {email: email}}).then(userModel => {
         if (userModel) {
-            if (bcryptjs.compareSync(password, userModel.password)) {
+            if (!userModel.isVerified) throw new RequestError("Email verification missing", {code: HTTP_STATUS.UNAUTHORIZED});
+            if (bcryptjs.compareSync(password, userModel.password ? userModel.password : "")) {
                 user = userModel;
             } else {
                 throw new RequestError("Password doesn't match", {code: HTTP_STATUS.BAD_REQUEST})
@@ -66,14 +67,9 @@ const searchUsersByCriteriaAndRole = async (criteria, role) => {
     try {
         const userModel = await User.findAll({
             attributes: ['email', 'firstname', 'lastname'],
-            where: {
-                [Op.or]: [
-                    {email: {[Op.like]: `%${criteria}%`}},
-                    {firstname: {[Op.like]: `%${criteria}%`}},
-                    {lastname: {[Op.like]: `%${criteria}%`}},
-                ],
-                role: role
-            }
+            where: Sequelize.where(Sequelize.fn("concat", Sequelize.col("firstname"), " ", Sequelize.col("lastname"), " ", Sequelize.col('email')),
+                Op.like, `%${criteria}%`),
+            limit: 5
         }, {plain: true});
         if (userModel) users = userModel;
         else error = new Error("Users not found with given criteria");

@@ -2,9 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const oAuthService = require("./services/auth/token_service");
-const oAuth2Server = require("node-oauth2-server");
+const oauth2server = require('node-oauth2-server-jg');
 const {errorHandler} = require("./common/utils");
-app.oauth = oAuth2Server({
+app.oauth = oauth2server({
     model: oAuthService,
     grants: ["password"],
     debug: true

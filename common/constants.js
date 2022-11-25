@@ -5,6 +5,10 @@ module.exports = {
     STUDENT_ROLE: 1,
     LECTURER_ROLE: 2,
     ADMIN_ROLE: 3,
+    PASSWORD_CONFIRMATION: {
+        VALIDATION: 'validation',
+        RESET_PASSWORD: 'reset'
+    },
     HTTP_STATUS: {
         OK: 200,
         CREATED: 201,

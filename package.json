@@ -26,7 +26,7 @@
     "express-validator": "^6.14.2",
     "jsonwebtoken": "^8.5.1",
     "memorystore": "^1.6.7",
-    "node-oauth2-server": "^2.4.0",
+    "node-oauth2-server-jg": "^2.0.0",
     "nodemailer": "^6.8.0",
     "passport-local": "^1.0.0",
     "pug": "^3.0.2",

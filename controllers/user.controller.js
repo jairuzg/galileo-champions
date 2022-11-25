@@ -1,4 +1,4 @@
-const {body, validationResult, query} = require("express-validator");
+const {body, validationResult, query, param} = require("express-validator");
 const express = require('express');
 const userService = require('../services/users/user.service');
 const {GOOGLE_PROVIDER, HTTP_STATUS, LECTURER_ROLE, ADMIN_ROLE} = require("../common/constants");
@@ -54,7 +54,7 @@ module.exports = (app) => {
         });
     });
 
-    userRouter.post('/students/search',
+    userRouter.get('/students/search',
         query('criteria').exists().withMessage("Field criteria is required").bail()
             .isString()
             .notEmpty().withMessage("Field criteria can't be empty"),

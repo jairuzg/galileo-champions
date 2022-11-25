@@ -1,5 +1,6 @@
 const {emailTransport, EMAIL_SENDER} = require("../../admin/email_sender");
 const {getResetPasswordLinkHTMLTemplate} = require("./templates/reset_password.html");
+const {getPasswordConfirmationHTMLTemplate} = require("./templates/password_confirmation.html");
 
 const sendForgotPasswordEmail = async (destinatary, resetLink, deviceName) => {
     let error, emailSubmitted;
@@ -17,6 +18,23 @@ const sendForgotPasswordEmail = async (destinatary, resetLink, deviceName) => {
     return {error, emailSubmitted}
 };
 
+const sendPasswordConfirmationEmail = async (recipient, validationLink) => {
+    let error, emailSubmitted;
+    await emailTransport.sendMail({
+        from: EMAIL_SENDER,
+        to: recipient,
+        subject: "Valida tu correo",
+        text: 'Confirma tu cuenta con nosotros',
+        html: getPasswordConfirmationHTMLTemplate(validationLink)
+    }).then(info => {
+        emailSubmitted = info;
+    }).catch(err => {
+        error = err;
+    });
+    return {error, emailSubmitted}
+};
+
 module.exports = {
-    sendForgotPasswordEmail: sendForgotPasswordEmail
+    sendForgotPasswordEmail: sendForgotPasswordEmail,
+    sendPasswordConfirmationEmail: sendPasswordConfirmationEmail
 };

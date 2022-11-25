@@ -1,7 +1,7 @@
 const {EMAIL_SENDER} = require("../../../admin/email_sender");
 const {FE_HOST_URL} = require("../../../config/app_config");
-const getResetPasswordLinkHTMLTemplate = (resetLinkInput, deviceName) => {
-    const resetLink = `${FE_HOST_URL}/reset-password/${resetLinkInput}`;
+const getPasswordConfirmationHTMLTemplate = (validationLinkInput) => {
+    const validationLink = `${FE_HOST_URL}/confirm-account/${validationLinkInput}`;
     return `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -11,7 +11,7 @@ const getResetPasswordLinkHTMLTemplate = (resetLinkInput, deviceName) => {
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="color-scheme" content="light dark" />
     <meta name="supported-color-schemes" content="light dark" />
-    <title></title>
+    <title>Verificacion de cuenta</title>
     <style type="text/css" rel="stylesheet" media="all">
     /* Base ------------------------------ */
     
@@ -442,7 +442,7 @@ const getResetPasswordLinkHTMLTemplate = (resetLinkInput, deviceName) => {
   <![endif]-->
   </head>
   <body>
-    <span class="preheader">Usa este link para resetear tu contraseña. El link es valido por 24 horas.</span>
+    <span class="preheader">Usa este link para verificar tu cuenta. El link es valido por 24 horas.</span>
     <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
       <tr>
         <td align="center">
@@ -463,7 +463,7 @@ const getResetPasswordLinkHTMLTemplate = (resetLinkInput, deviceName) => {
                     <td class="content-cell">
                       <div class="f-fallback">
                         <h1>Hola,</h1>
-                        <p>Solicitaste reiniciar la contraseña de cu cuenta de Galileo Champions recientemente. Haz click en el boton de abajo para resetearla. <strong>Este link para resetear tu contraseña es valido unicamente por 24 horas.</strong></p>
+                        <p>Te has registrado exitosamente en GalileoChampions, no paras de ganar!. Haz click en el boton de abajo para verificar tu cuenta. <strong>Este link para verificar tu cuenta es valido unicamente por 24 horas.</strong></p>
                         <!-- Action -->
                         <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                           <tr>
@@ -473,14 +473,14 @@ const getResetPasswordLinkHTMLTemplate = (resetLinkInput, deviceName) => {
                               <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
                                 <tr>
                                   <td align="center">
-                                    <a href="${resetLink}" class="f-fallback button button--green" target="_blank">Reiniciar contraseña</a>
+                                    <a href="${validationLink}" class="f-fallback button button--green" target="_blank">Verificar cuenta</a>
                                   </td>
                                 </tr>
                               </table>
                             </td>
                           </tr>
                         </table>
-                        <p>Por tu seguridad, esta peticion fue recibida desde ${deviceName}. Si no solicitaste el reinicio de contraseña, favor de hacer caso omiso a este correo <a href="mailto:${EMAIL_SENDER}">contactanos</a> si tienes alguna pregunta.</p>
+                        <p>Si no solicitaste la creacion de esta cuenta, favor hace caso omiso a este correo, <a href="mailto:${EMAIL_SENDER}">contactanos</a> si tienes alguna pregunta.</p>
                         <p>Gracias,
                           <br>Galileo Champions team</p>
                         <!-- Sub copy -->
@@ -513,5 +513,5 @@ const getResetPasswordLinkHTMLTemplate = (resetLinkInput, deviceName) => {
 };
 
 module.exports = {
-    getResetPasswordLinkHTMLTemplate: getResetPasswordLinkHTMLTemplate
+    getPasswordConfirmationHTMLTemplate: getPasswordConfirmationHTMLTemplate
 }

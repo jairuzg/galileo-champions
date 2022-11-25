@@ -2,9 +2,10 @@ const {AccessToken} = require("../../models/access_token.model");
 const {getUserByEmailAndPassword} = require("../users/user.service");
 const {ClientCredential} = require("../../models/client_credential.model");
 const utils = require("../../common/utils");
-const {User} = require("../../models/user.model");
 const jwt = require('jsonwebtoken');
 const {JWT_SECRET_KEY} = require("../../config/app_config");
+const {RequestError} = require("../../controllers/request_utils.controller");
+const {HTTP_STATUS} = require("../../common/constants");
 
 module.exports = {
     getClient: (clientID, clientSecret, done) => {
@@ -29,9 +30,13 @@ module.exports = {
         done(false, true);
     },
     getUser: (username, password, done) => {
-        return getUserByEmailAndPassword(username, password).then(resp => {
-            if (!resp.error) done(null, resp.user);
-            else done(resp.error, false);
+        getUserByEmailAndPassword(username, password).then(resp => {
+            if (!resp.error && !resp.user.isVerified) {
+                const error = new RequestError("Need to verify email address first!", {code: HTTP_STATUS.UNAUTHORIZED});
+                return done(error, false);
+            }
+            if (!resp.error) return done(null, resp.user);
+            else return done(resp.error, false);
         });
     },
     saveAccessToken: (accessToken, clientID, expires, user, done) => {
