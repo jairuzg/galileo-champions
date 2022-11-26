@@ -10,9 +10,11 @@ const emailService = require("../email/email.service");
 const {User} = require("../../models/user.model");
 
 const registerUser = async (req, res) => {
-    const resp = await userService.registerUser(req.body);
+    const resp = await registerUserWithEmailConfirmation(req.body);
     if (!resp.error) {
-        sendResponse(res, "User created successfully.");
+        let message = "User created successfully , no needed email verification.";
+        if (resp.isValidationRequested) message = "User created successfully, email verification sent";
+        sendResponse(res, message);
     } else {
         sendResponse(res, resp.error.message, resp.error)
     }
@@ -121,7 +123,7 @@ const resetPasswordByToken = async (password, token) => {
     let error, isPasswordReset;
     try {
         const tokenValidation = await validateResetToken(token);
-        if(tokenValidation.error) throw tokenValidation.error;
+        if (tokenValidation.error) throw tokenValidation.error;
         const passwordConfirmation = tokenValidation.passwordConfirmation;
         if (passwordConfirmation) {
             const user = passwordConfirmation.User;

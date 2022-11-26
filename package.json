@@ -26,7 +26,6 @@
     "express-validator": "^6.14.2",
     "jsonwebtoken": "^8.5.1",
     "memorystore": "^1.6.7",
-    "node-oauth2-server-jg": "^2.0.0",
     "nodemailer": "^6.8.0",
     "passport-local": "^1.0.0",
     "pug": "^3.0.2",
@@ -38,6 +37,7 @@
     "cors": "^2.8.5",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
+    "node-oauth2-server-jg": "1.9.9",
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0"
   }
