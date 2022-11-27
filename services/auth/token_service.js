@@ -74,11 +74,17 @@ module.exports = {
             done(ex, false);
         });
     },
-    generateToken: (type, req, done) => {
+    generateToken: async (type, req, done) => {
         try {
             const user = req.user.dataValues;
-            const jwtSecretKey = JWT_SECRET_KEY;
-            done(null, jwt.sign(user, jwtSecretKey));
+            let tokenModel = await AccessToken.findOne({
+                where: {user: user.email}
+            });
+            if (tokenModel) return done(null, tokenModel.token);
+            else {
+                const jwtSecretKey = JWT_SECRET_KEY;
+                return done(null, jwt.sign(user, jwtSecretKey));
+            }
         } catch (ex) {
             done(ex, false);
         }
