@@ -39,17 +39,21 @@ module.exports = {
             else return done(resp.error, false);
         });
     },
-    saveAccessToken: (accessToken, clientID, expires, user, done) => {
-        AccessToken.create({
-            accessToken: utils.getEpochTime(),
-            user: user.email,
-            token: accessToken
-        }).then(accessTokenModel => {
-            if (accessTokenModel) done(null, accessTokenModel);
-            else done(new Error("Couldn't generate the access token"), false);
-        }).catch(ex => {
+    saveAccessToken: async (accessToken, clientID, expires, user, done) => {
+        try {
+            let tokenModel = await AccessToken.findOne({
+                where: {user: user.email}
+            });
+            if (!tokenModel) tokenModel = await AccessToken.create({
+                accessToken: utils.getEpochTime(),
+                user: user.email,
+                token: accessToken
+            });
+            if (tokenModel) return done(null, tokenModel);
+            else return done(new Error("Couldn't generate the access token"), false);
+        } catch (ex) {
             done(ex, false);
-        });
+        }
     },
     getAccessToken: (bearerToken, done) => {
         AccessToken.findOne({

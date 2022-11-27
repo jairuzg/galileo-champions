@@ -4,7 +4,7 @@ const {ADMIN_ROLE, HTTP_STATUS} = require("../common/constants");
 const rockstarService = require("../services/galileo_rockstar/galileo_rockstar.service");
 const reqUtils = require("./request_utils.controller");
 const {body} = require("express-validator");
-const rockstarFormService = require("../services/rockstar/rockstar-form.service");
+const rockstarFormService = require("../services/rockstar/rockstar_form.service");
 const rockstarPeriodService = require("../services/rockstar/rockstar_period.service");
 const rockstarRouter = express.Router();
 
@@ -46,6 +46,17 @@ module.exports = (app) => {
                     message: "Thanks for submitting your vote, we'll tell you who wins when the voting period finishes, your submission id is " + saveVoteResp.docId,
                     data: saveVoteResp.isVoteStored
                 }); else reqUtils.respond(res, null, saveVoteResp.error);
+            });
+        });
+
+    rockstarRouter.get('/rockstar/voter-can-vote',
+        app.oauth.authorise(),
+        (req, res, next) => {
+            rockstarFormService.verifyIfVoterCanVote(req.user.email).then(verifyResp => {
+                if (!verifyResp.error) reqUtils.respond(res, {
+                    code: HTTP_STATUS.OK,
+                    message: "The voter can vote in the current period"
+                }); else reqUtils.respond(res, null, verifyResp.error);
             });
         });
 
