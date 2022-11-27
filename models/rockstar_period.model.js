@@ -6,7 +6,6 @@ const RockstarPeriod = sequelize.define('RockstarPeriod', {
     rockstarPeriod: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true,
         field: 'rockstar_period'
     },
     periodFrom: {

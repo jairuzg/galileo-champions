@@ -76,11 +76,11 @@ module.exports = (app) => {
         });
 
     userRouter.get('/user/:email',
-        body('email').isEmail().withMessage("Must provide a valid email address"),
+        param('email').isEmail().withMessage("Must provide a valid email address"),
         app.oauth.authorise(), checkRequiredPermissions([ADMIN_ROLE]),
         (req, res, next) => {
             reqUtils.validateRequest(req, res, next);
-            userService.getUserByEmail(req.body.email).then(getUserResp => {
+            userService.getUserByEmail(req.params['email']).then(getUserResp => {
                 if (!getUserResp.error) reqUtils.respond(res, {
                     message: "Successfully fetched the user.",
                     data: getUserResp.user,

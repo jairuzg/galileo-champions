@@ -27,12 +27,18 @@ function getCurrentDateObject() {
     }
 }
 
-function getCurrentTimeInDBFormat() {
+function getCurrentDatetimeInDBFormat() {
     return new Date().toISOString().slice(0, 19).replace('T', ' ');
 }
+
+function getCurrentDateInDBFormat() {
+    return new Date().toISOString().slice(0, 10).replace('T', ' ');
+}
+
 module.exports = {
     errorHandler: errorHandler,
     getEpochTime: getEpochTime,
     getCurrentDateObject: getCurrentDateObject,
-    getCurrentTimeInDBFormat: getCurrentTimeInDBFormat
+    getCurrentDatetimeInDBFormat: getCurrentDatetimeInDBFormat,
+    getCurrentDateInDBFormat: getCurrentDateInDBFormat
 };

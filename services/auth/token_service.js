@@ -54,7 +54,8 @@ module.exports = {
     getAccessToken: (bearerToken, done) => {
         AccessToken.findOne({
             order: [['accessToken', 'DESC']],
-            attributes: ['token', 'user']
+            attributes: ['token', 'user'],
+            where: {token: bearerToken}
         }).then(accessTokenModel => {
             if (accessTokenModel && accessTokenModel.token === bearerToken) {
                 const accessToken = {
