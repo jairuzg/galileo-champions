@@ -32,7 +32,7 @@ yargs.command({
     handler(argv) {
         userService.createAdminUser(argv.email, argv.firstname, argv.lastname, argv.password).then(adminResp => {
             if (adminResp.error) console.error("There was an error while trying to create the admin user " + adminResp.error.message);
-            else console.log("Successfully created the admin, you can now use it to login into the system");
+            else console.info("Successfully created the admin, you can now use it to login into the system");
         });
     }
 });

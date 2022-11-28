@@ -38,7 +38,7 @@ async function verifyIfVoterCanVote(voterEmail) {
         const snapshot = await q.get();
         if (snapshot.empty) {
             canVote = true;
-        } else throw new RequestError("Sorry, you can't vote more than once", {code: HTTP_STATUS.BAD_REQUEST});
+        } else throw new RequestError("We're sorry, you can't vote more than once per Rockstar period", {code: HTTP_STATUS.BAD_REQUEST});
     } catch (e) {
         error = e;
     }

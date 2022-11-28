@@ -1,13 +1,14 @@
 const userService = require('../users/user.service');
 const jwt = require('jsonwebtoken');
 const {JWT_SECRET_KEY, API_KEY} = require("../../config/app_config");
-const {HTTP_STATUS, SALT, PASSWORD_CONFIRMATION, EMAIL_PROVIDER} = require("../../common/constants");
+const {HTTP_STATUS, SALT, PASSWORD_CONFIRMATION, EMAIL_PROVIDER, GOOGLE_PROVIDER} = require("../../common/constants");
 const {getEpochTime} = require("../../common/utils");
 const bcryptjs = require("bcryptjs");
 const {PasswordConfirmation} = require("../../models/password_confirmation.model");
 const {RequestError} = require("../../controllers/request_utils.controller");
 const emailService = require("../email/email.service");
 const {User} = require("../../models/user.model");
+const googleAuthService = require("./google_auth.service");
 
 const registerUser = async (req, res) => {
     const resp = await registerUserWithEmailConfirmation(req.body);
@@ -141,7 +142,7 @@ const resetPasswordByToken = async (password, token) => {
 };
 
 const registerUserWithEmailConfirmation = async (user) => {
-    let error, isValidationRequested, passwordConfirmation, isUserCreated;
+    let error, isValidationRequested, passwordConfirmation, isUserCreated, newUser;
     try {
         const userResp = await userService.registerUser(user);
         if (userResp.error) throw Error("Couldn't create the user. " + userResp.error.message);
@@ -162,14 +163,24 @@ const registerUserWithEmailConfirmation = async (user) => {
                 await passwordConfirmation.destroy();
                 await userResp.registeredUser.destroy();
                 if (passwordConfirmation) await passwordConfirmation.destroy();
-                throw new Error("There was an issue while sending the reset password link email to the recipient");
+                throw new Error("There was an issue while sending the account confirmation link email to the recipient");
             }
             isValidationRequested = true;
+        } else if(user.provider === GOOGLE_PROVIDER) {
+            await googleAuthService.generateTokenNewUser(user).then(async (geTokenResp) => {
+                if (!geTokenResp.error) {
+                    user.accessToken = geTokenResp.accessToken.token;
+                    newUser = user;
+                } else {
+                    await user.destroy();
+                    throw new Error("There was an issue while generating an access token for the registered user, you will have to register again");
+                }
+            });
         }
     } catch (e) {
         error = e;
     }
-    return {error, isValidationRequested, isUserCreated};
+    return {error, isValidationRequested, isUserCreated, newUser};
 }
 
 const confirmAccountWithToken = async (token) => {

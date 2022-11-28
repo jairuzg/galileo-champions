@@ -12,6 +12,7 @@ const {
 const bcryptjs = require('bcryptjs');
 const {Op, Sequelize} = require("sequelize");
 const {RequestError} = require("../../controllers/request_utils.controller");
+const googleAuthService = require("../auth/google_auth.service");
 
 const getUserByEmailAndPassword = async (email, password) => {
     let user, error;
@@ -130,9 +131,15 @@ const createAdminUser = async (email, firstname, lastname, password) => {
 const getUserByEmail = async (email) => {
     let error, user;
     try {
-        user = await User.findByPk(email);
-        if (!user) throw new RequestError("User doesn't exist", {code: HTTP_STATUS.NOT_FOUND});
+        const userModel = await User.findByPk(email);
+        if (!userModel) throw new RequestError("User doesn't exist", {code: HTTP_STATUS.NOT_FOUND});
+        user = userModel.toJSON();
+        const accessToken = await googleAuthService.generateTokenNewUser(user);
+        if (accessToken.error) throw new RequestError("User exists but couldn't generate its access token, " + accessToken.error.message,
+            {code: HTTP_STATUS.INTERNAL_SERVER_ERROR});
+        user.accessToken = accessToken.accessToken.token;
     } catch (e) {
+        console.error(e);
         error = e;
     }
     return {error, user};

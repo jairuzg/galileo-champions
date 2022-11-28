@@ -5,7 +5,7 @@ const validateRequest = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         throw new RequestError("There was an error with your request", {
-            message: "",
+            message: "There was an error with your request",
             code: HTTP_STATUS.BAD_REQUEST,
             errors: errors.mapped()
         });

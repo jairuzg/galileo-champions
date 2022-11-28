@@ -32,5 +32,5 @@ app.use(errorHandler());
 
 const applicationPort = 3414;
 app.listen(applicationPort, () => {
-    console.log("Running Galileo-Champions backend in port  ", applicationPort);
+    console.info("Running Galileo-Champions backend in port  ", applicationPort);
 })

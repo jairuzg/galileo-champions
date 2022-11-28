@@ -14,9 +14,10 @@ module.exports = (app) => {
         body('email').isEmail(),
         body('firstname').isString().notEmpty(),
         body('lastname').isString().notEmpty(),
-        body('password').isString().notEmpty(),
+        body('password').isString().notEmpty().optional(),
         body('isVerified').isBoolean().notEmpty().optional(),
         body('role').isNumeric().notEmpty().optional(),
+        body('provider').isString().notEmpty().optional(),
         (req, res, next) => {
             reqUtils.validateRequest(req, res, next);
             authService.registerUserWithEmailConfirmation(req.body).then(registerWithEVResp => {
@@ -25,7 +26,8 @@ module.exports = (app) => {
                     if (registerWithEVResp.isValidationRequested) message = "User created successfully, email verification sent";
                     reqUtils.respond(res, {
                         message: message,
-                        code: HTTP_STATUS.OK
+                        code: HTTP_STATUS.OK,
+                        data: registerWithEVResp.newUser ? registerWithEVResp.newUser : registerWithEVResp.isUserCreated
                     });
                 } else reqUtils.respond(res, null, registerWithEVResp.error);
             });
