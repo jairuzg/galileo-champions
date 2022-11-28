@@ -40,7 +40,7 @@ const checkRequiredPermissions = (requiredPermissions) => {
         const hasPermissions = requiredPermissions.includes(role);
 
         if (!hasPermissions) {
-            let err = new Error("Error: Insufficient permission to access this resource");
+            let err = new Error("Error: Insufficient permission to access this resource, check your role");
             err.code = HTTP_STATUS.UNAUTHORIZED;
             throw err;
         } else {
@@ -55,6 +55,7 @@ const validateApiKey = () => {
         if (requestApiKey && requestApiKey === API_KEY) {
             return next();
         } else {
+            console.error("API KEY is invalid");
             throw new RequestError("Error: Insufficient permission to access this resource", {code: HTTP_STATUS.UNAUTHORIZED});
         }
     }
@@ -226,5 +227,6 @@ module.exports = {
     resetPasswordByToken: resetPasswordByToken,
     validateApiKey: validateApiKey,
     registerUserWithEmailConfirmation: registerUserWithEmailConfirmation,
-    confirmAccountWithToken: confirmAccountWithToken
+    confirmAccountWithToken: confirmAccountWithToken,
+    extractPayloadFromReq: extractPayload
 };

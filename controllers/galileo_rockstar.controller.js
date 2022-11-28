@@ -60,5 +60,26 @@ module.exports = (app) => {
             });
         });
 
+    rockstarRouter.post('/rockstar/vote-counting',
+        body('periodDate').isDate().notEmpty().withMessage("You need to specify the period date"),
+        (req, res, next) => {
+            reqUtils.validateRequest(req, res, next);
+            rockstarFormService.saveTopRockstarStudentsByAnyDate(req.body.periodDate);
+            reqUtils.respond(res, {
+                code: HTTP_STATUS.OK,
+                message: "Job to save top rockstar started, email will be sent to admin once done."
+            });
+        });
+
+    rockstarRouter.get('/rockstar/student/rockstar-info', app.oauth.authorise(), (req, res) => {
+        rockstarFormService.isUserRockstarOfLastPeriod(req.user.email).then(rockstarResp => {
+            if (!rockstarResp.error) reqUtils.respond(res, {
+                code: HTTP_STATUS.OK,
+                message: "The user is rockstar of the last period",
+                data: rockstarResp.isRockstar
+            }); else reqUtils.respond(res, null, rockstarResp.error);
+        });
+    });
+
     return rockstarRouter;
 };

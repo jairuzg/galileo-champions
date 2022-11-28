@@ -15,7 +15,7 @@ module.exports = (app) => {
         body('firstname').isString().notEmpty(),
         body('lastname').isString().notEmpty(),
         body('password').isString().notEmpty().optional(),
-        body('isVerified').isBoolean().notEmpty().optional(),
+        body('isVerified').optional(),
         body('role').isNumeric().notEmpty().optional(),
         body('provider').isString().notEmpty().optional(),
         (req, res, next) => {

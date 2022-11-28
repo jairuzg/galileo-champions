@@ -1,9 +1,8 @@
-const {Sequelize, DataTypes} = require('sequelize');
-const creds = require("../config/mysql_credentials.json");
+const {DataTypes} = require('sequelize');
 const {RockstarPeriod} = require("./rockstar_period.model");
-const sequelize = new Sequelize(`mysql://${creds.username}:${creds.password}@${creds.host}:${creds.port}/${creds.database}`);
+const {orm} = require('./../config/app_config');
 
-const ChampionRockstar = sequelize.define('ChampionRockstar', {
+const ChampionRockstar = orm.define('ChampionRockstar', {
     championRockstar: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -19,11 +18,6 @@ const ChampionRockstar = sequelize.define('ChampionRockstar', {
         type: DataTypes.INTEGER,
         allowNull: false,
         field: 'rockstar_period'
-    },
-    googleSheetUrl: {
-        type: DataTypes.STRING(1000),
-        allowNull: false,
-        field: 'google_sheet_url'
     },
     nominationCount: {
         type: DataTypes.INTEGER,

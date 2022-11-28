@@ -27,6 +27,7 @@
     "firebase-admin": "^11.3.0",
     "jsonwebtoken": "^8.5.1",
     "memorystore": "^1.6.7",
+    "node-jq": "^2.3.4",
     "nodemailer": "^6.8.0",
     "passport-local": "^1.0.0",
     "pug": "^3.0.2",

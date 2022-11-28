@@ -1,8 +1,7 @@
-const {DataTypes, Sequelize} = require('sequelize');
-const creds = require("../config/mysql_credentials.json");
-const sequelize = new Sequelize(`mysql://${creds.username}:${creds.password}@${creds.host}:${creds.port}/${creds.database}`);
+const {DataTypes} = require('sequelize');
+const {orm} = require('../config/app_config');
 
-const RockstarPeriod = sequelize.define('RockstarPeriod', {
+const RockstarPeriod = orm.define('RockstarPeriod', {
     rockstarPeriod: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -18,6 +17,12 @@ const RockstarPeriod = sequelize.define('RockstarPeriod', {
         allowNull: false,
         field: 'period_to'
     },
+    representation: {
+        type: DataTypes.VIRTUAL,
+        get() {
+            return `(${this.periodFrom} - ${this.periodTo})`;
+        }
+    }
 }, {
     tableName: 'rockstar_period',
     timestamps: false

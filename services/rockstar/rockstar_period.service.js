@@ -47,7 +47,31 @@ const getCurrentPeriod = async () => {
     return {error, currentPeriod};
 }
 
+const getLastPeriod = async () => {
+    let error, lastPeriod;
+    try{
+        lastPeriod = await RockstarPeriod.findOne({order: [['rockstarPeriod','DESC']]});
+        if (!lastPeriod) throw new RequestError("Couldn't find the rockstar period", {code: HTTP_STATUS.NOT_FOUND});
+    }catch (e) {
+        error = e;
+    }
+    return {error, lastPeriod};
+};
+
+const getCurrentPeriodByAnyDate = async (anyDate) => {
+    let error, rockstarPeriod;
+    try {
+        rockstarPeriod = await RockstarPeriod.findOne({where: {[Op.and]: [{periodFrom: {[Op.lte]: anyDate}}, {periodTo: {[Op.gte]: anyDate}}]}});
+        if (!rockstarPeriod || !rockstarPeriod.rockstarPeriod) throw new Error("Couldn't find any period that matches that date");
+    } catch (e) {
+        error = e;
+    }
+    return {error, rockstarPeriod};
+};
+
 module.exports = {
     createRockstarPeriod: createRockstarPeriod,
-    getCurrentPeriod: getCurrentPeriod
+    getCurrentPeriod: getCurrentPeriod,
+    getCurrentPeriodByAnyDate: getCurrentPeriodByAnyDate,
+    getLastPeriod: getLastPeriod
 };

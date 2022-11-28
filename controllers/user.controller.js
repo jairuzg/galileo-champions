@@ -5,6 +5,7 @@ const {GOOGLE_PROVIDER, HTTP_STATUS, LECTURER_ROLE, ADMIN_ROLE} = require("../co
 const {checkRequiredPermissions, validateApiKey} = require("../services/auth/authenticator.service");
 const controllerUtils = require("./request_utils.controller");
 const reqUtils = require("./request_utils.controller");
+const authService = require("../services/auth/authenticator.service");
 const userRouter = express.Router();
 
 module.exports = (app) => {
@@ -75,20 +76,6 @@ module.exports = (app) => {
 
         });
 
-    userRouter.get('/user/:email',
-        param('email').isEmail().withMessage("Must provide a valid email address"),
-        app.oauth.authorise(), checkRequiredPermissions([ADMIN_ROLE]),
-        (req, res, next) => {
-            reqUtils.validateRequest(req, res, next);
-            userService.getUserByEmail(req.params['email']).then(getUserResp => {
-                if (!getUserResp.error) reqUtils.respond(res, {
-                    message: "Successfully fetched the user.",
-                    data: getUserResp.user,
-                    code: HTTP_STATUS.OK
-                }); else reqUtils.respond(res, null, getUserResp.error);
-            });
-        });
-
     userRouter.post('/user-exists',
         body('email').isEmail().withMessage("A valid email must be sent").exists(),
         validateApiKey(), (req, res, next) => {
@@ -100,6 +87,35 @@ module.exports = (app) => {
                     data: checkResp.userExists
                 }); else reqUtils.respond(res, null, checkResp.error);
 
+            });
+        });
+
+    userRouter.get('/user/profile', app.oauth.authorise(), (req, res) => {
+        const userPayload = authService.extractPayloadFromReq(req);
+        const userProfile = {
+            email: userPayload.email,
+            firstname: userPayload.firstname,
+            lastname: userPayload.lastname
+        };
+        if (userProfile.password) delete userProfile.password;
+        reqUtils.respond(res, {
+            code: HTTP_STATUS.OK,
+            message: "User profile grabbed",
+            data: userProfile
+        });
+    })
+
+    userRouter.get('/user/:email',
+        param('email').isEmail().withMessage("Must provide a valid email address"),
+        app.oauth.authorise(), checkRequiredPermissions([ADMIN_ROLE]),
+        (req, res, next) => {
+            reqUtils.validateRequest(req, res, next);
+            userService.getUserByEmail(req.params['email']).then(getUserResp => {
+                if (!getUserResp.error) reqUtils.respond(res, {
+                    message: "Successfully fetched the user.",
+                    data: getUserResp.user,
+                    code: HTTP_STATUS.OK
+                }); else reqUtils.respond(res, null, getUserResp.error);
             });
         });
 
