@@ -5,17 +5,41 @@ const reqUtils = require("./request_utils.controller");
 const authService = require("../services/auth/authenticator.service");
 const {HTTP_STATUS} = require("../common/constants");
 const userService = require("../services/users/user.service");
+const {checkWhitelistedDomain} = require("./request_utils.controller");
 const authRouter = express.Router();
 
 module.exports = (app) => {
-    authRouter.post("/register", authenticator.registerUser);
+    authRouter.post("/register",
+        body('email').isEmail().custom(checkWhitelistedDomain).withMessage("The domain of that email is not allowed for registration"),
+        body('firstname').isString().notEmpty(),
+        body('lastname').isString().notEmpty(),
+        body('password').isString().notEmpty().optional(),
+        body('isVerified').isBoolean().optional(),
+        body('role').isNumeric().notEmpty().optional(),
+        body('provider').isString().notEmpty().optional(),
+        (req, res, next) => {
+            reqUtils.validateRequest(req, res, next);
+            authService.registerUserWithEmailConfirmation(req.body).then(resp => {
+                if (!resp.error) {
+                    let message = "User created successfully , no needed email verification.";
+                    if (resp.isValidationRequested) message = "User created successfully, email verification sent";
+                    reqUtils.respond(res, {
+                        message: message,
+                        code: HTTP_STATUS.OK,
+                        data: resp.data
+                    });
+                } else {
+                    reqUtils.respond(res, null, resp.error);
+                }
+            });
+        });
 
     authRouter.post("/register-web",
         body('email').isEmail(),
         body('firstname').isString().notEmpty(),
         body('lastname').isString().notEmpty(),
         body('password').isString().notEmpty().optional(),
-        body('isVerified').optional(),
+        body('isVerified').isBoolean().optional(),
         body('role').isNumeric().notEmpty().optional(),
         body('provider').isString().notEmpty().optional(),
         (req, res, next) => {

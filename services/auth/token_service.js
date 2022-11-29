@@ -31,7 +31,7 @@ module.exports = {
     },
     getUser: (username, password, done) => {
         getUserByEmailAndPassword(username, password).then(resp => {
-            if (!resp.error && !resp.user.isVerified) {
+            if (resp.user && !resp.user.isVerified) {
                 const error = new RequestError("Need to verify email address first!", {code: HTTP_STATUS.UNAUTHORIZED});
                 return done(error, false);
             }

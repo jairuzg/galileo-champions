@@ -1,5 +1,6 @@
 const {HTTP_STATUS} = require("../common/constants");
 const {validationResult} = require("express-validator");
+const {ALLOWED_REGISTRATION_DOMAINS} = require("../config/app_config");
 
 const validateRequest = (req, res, next) => {
     const errors = validationResult(req);
@@ -9,6 +10,16 @@ const validateRequest = (req, res, next) => {
             code: HTTP_STATUS.BAD_REQUEST,
             errors: errors.mapped()
         });
+    }
+}
+
+const checkWhitelistedDomain = (value) => {
+    try {
+        const allowedDomains = ALLOWED_REGISTRATION_DOMAINS.split(",");
+        return allowedDomains.includes((value.split('@'))[1]);
+    } catch (e) {
+        console.error("Error while trying to validate email address " + e.message);
+        return false;
     }
 }
 
@@ -33,5 +44,6 @@ const respond = (res, obj, err) => {
 module.exports = {
     validateRequest: validateRequest,
     RequestError: RequestError,
-    respond: respond
+    respond: respond,
+    checkWhitelistedDomain: checkWhitelistedDomain
 };

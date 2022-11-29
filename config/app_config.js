@@ -21,5 +21,6 @@ module.exports = {
     API_KEY: process.env.API_KEY,
     TOP_ROCKSTAR_STUDENTS_LIMIT: parseInt(process.env.TOP_ROCKSTAR_STUDENTS_LIMIT) || 3,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-    orm: orm
+    orm: orm,
+    ALLOWED_REGISTRATION_DOMAINS: process.env.ALLOWED_REGISTRATION_DOMAINS
 }

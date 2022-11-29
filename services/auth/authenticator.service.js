@@ -9,17 +9,7 @@ const {RequestError} = require("../../controllers/request_utils.controller");
 const emailService = require("../email/email.service");
 const {User} = require("../../models/user.model");
 const googleAuthService = require("./google_auth.service");
-
-const registerUser = async (req, res) => {
-    const resp = await registerUserWithEmailConfirmation(req.body);
-    if (!resp.error) {
-        let message = "User created successfully , no needed email verification.";
-        if (resp.isValidationRequested) message = "User created successfully, email verification sent";
-        sendResponse(res, message);
-    } else {
-        sendResponse(res, resp.error.message, resp.error)
-    }
-}
+const reqUtils = require("../../controllers/request_utils.controller");
 
 const login = (query, res) => {
 };
@@ -167,7 +157,7 @@ const registerUserWithEmailConfirmation = async (user) => {
                 throw new Error("There was an issue while sending the account confirmation link email to the recipient");
             }
             isValidationRequested = true;
-        } else if(user.provider === GOOGLE_PROVIDER) {
+        } else if (user.provider === GOOGLE_PROVIDER) {
             await googleAuthService.generateTokenNewUser(user).then(async (geTokenResp) => {
                 if (!geTokenResp.error) {
                     user.accessToken = geTokenResp.accessToken.token;
@@ -219,7 +209,6 @@ const confirmAccountWithToken = async (token) => {
 };
 
 module.exports = {
-    registerUser: registerUser,
     login: login,
     checkRequiredPermissions: checkRequiredPermissions,
     generateResetPasswordHash: generateResetPasswordHash,
