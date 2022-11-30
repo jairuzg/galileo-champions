@@ -6,9 +6,10 @@ const ormConfig = {
     "password": creds.password,
     "database": creds.database,
     "host": creds.host,
-    "dialect": "mysql",
-    "logging": process.env.ENVIRONMENT_MODE !== 'production'
+    "dialect": "mysql"
 };
+
+if (process.env.ENVIRONMENT_MODE === 'production') ormConfig.logging = false;
 const orm = new Sequelize(ormConfig);
 
 module.exports = {
@@ -22,5 +23,7 @@ module.exports = {
     TOP_ROCKSTAR_STUDENTS_LIMIT: parseInt(process.env.TOP_ROCKSTAR_STUDENTS_LIMIT) || 3,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     orm: orm,
-    ALLOWED_REGISTRATION_DOMAINS: process.env.ALLOWED_REGISTRATION_DOMAINS
+    ALLOWED_REGISTRATION_DOMAINS: process.env.ALLOWED_REGISTRATION_DOMAINS,
+    ROCKSTAR_CHAMPION_POINTS: process.env.ROCKSTAR_CHAMPION_POINTS,
+    ROCKSTAR_CHAMPION_POINTS_REASON: process.env.ROCKSTAR_CHAMPION_POINTS_REASON
 }

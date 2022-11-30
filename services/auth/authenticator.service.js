@@ -208,6 +208,19 @@ const confirmAccountWithToken = async (token) => {
     return {error, isAccountValidated};
 };
 
+const changeUserPassword = async (email, password) => {
+    let error, isPasswordChanged;
+    try {
+        const hashedPassword = bcryptjs.hashSync(password, SALT);
+        await User.update({password: hashedPassword}, {where: {email: email}});
+        isPasswordChanged = true
+    } catch (e) {
+        console.error("Error when trying to update password ", e);
+        error = e;
+    }
+    return {error, isPasswordChanged};
+};
+
 module.exports = {
     login: login,
     checkRequiredPermissions: checkRequiredPermissions,
@@ -217,5 +230,6 @@ module.exports = {
     validateApiKey: validateApiKey,
     registerUserWithEmailConfirmation: registerUserWithEmailConfirmation,
     confirmAccountWithToken: confirmAccountWithToken,
-    extractPayloadFromReq: extractPayload
+    extractPayloadFromReq: extractPayload,
+    changeUserPassword: changeUserPassword
 };

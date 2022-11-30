@@ -1,10 +1,9 @@
-const {Sequelize, DataTypes, INTEGER, NOW} = require('sequelize');
+const {DataTypes} = require('sequelize');
 const {User} = require("./user.model");
 const {LecturerRedemptionCenter} = require("./lecturer_redemption_center.model");
-const creds = require('../config/mysql_credentials.json');
-const sequelize = new Sequelize(`mysql://${creds.username}:${creds.password}@${creds.host}:${creds.port}/${creds.database}`)
+const {orm} = require("../config/app_config");
 
-const ChampionPoints = sequelize.define('ChampionPoints', {
+const ChampionPoints = orm.define('ChampionPoints', {
     lrcs: {
         type: DataTypes.INTEGER,
         primaryKey: true,

@@ -63,7 +63,6 @@ const sendTopRockstarJobErrorEmail = async (recipient, message, rockstarPeriod) 
     }).then(info => {
         emailSubmitted = info;
     }).catch(err => {
-        console.log("error al tratar de mandar el rockstar error email", error);
         error = err;
     });
     return {error, emailSubmitted};

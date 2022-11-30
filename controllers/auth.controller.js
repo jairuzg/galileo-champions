@@ -133,5 +133,17 @@ module.exports = (app) => {
             })
         });
 
+    authRouter.post("/change-password", body("password").isString().notEmpty(), app.oauth.authorise(),
+        (req, res, next) => {
+            reqUtils.validateRequest(req);
+            authService.changeUserPassword(req.user.email, req.body.password).then(changeResp => {
+                if (changeResp.error) return reqUtils.respond(res, null, changeResp.error);
+                else return reqUtils.respond(res, {
+                    code: HTTP_STATUS.OK,
+                    message: "Password changed successfully"
+                });
+            });
+        });
+
     return authRouter;
 }

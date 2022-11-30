@@ -23,7 +23,7 @@ const grRouter = require('./controllers/galileo_rockstar.controller')(app);
 
 app.use('/api', userRouter);
 app.use('/api/auth', authRouter);
-app.use('/api/redemptionCenter', rcRouter);
+app.use('/api', rcRouter);
 app.use('/api', ccRouter);
 app.use('/api', cpRouter);
 app.use('/api', grRouter);

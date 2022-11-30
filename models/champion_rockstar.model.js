@@ -24,6 +24,11 @@ const ChampionRockstar = orm.define('ChampionRockstar', {
         allowNull: false,
         field: 'nomination_count',
         defaultValue: 0
+    },
+    redeemed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
     }
 }, {
     tableName: 'champion_rockstar',

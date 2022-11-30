@@ -1,6 +1,6 @@
 const express = require('express');
 const {checkRequiredPermissions} = require("../services/auth/authenticator.service");
-const {ADMIN_ROLE, HTTP_STATUS} = require("../common/constants");
+const {ADMIN_ROLE, HTTP_STATUS, LECTURER_ROLE} = require("../common/constants");
 const rockstarService = require("../services/galileo_rockstar/galileo_rockstar.service");
 const reqUtils = require("./request_utils.controller");
 const {body} = require("express-validator");
@@ -9,6 +9,7 @@ const rockstarPeriodService = require("../services/rockstar/rockstar_period.serv
 const rockstarRouter = express.Router();
 
 module.exports = (app) => {
+
     rockstarRouter.get('/galileo-rockstar/nominated-emails',
         app.oauth.authorise(), checkRequiredPermissions([ADMIN_ROLE]), (req, res) => {
             rockstarService.fetchStudentsEmailsArray().then(emailsResp => {
@@ -80,6 +81,41 @@ module.exports = (app) => {
             }); else reqUtils.respond(res, null, rockstarResp.error);
         });
     });
+
+    rockstarRouter.get('/rockstar/winners-summary', app.oauth.authorise(), checkRequiredPermissions([LECTURER_ROLE]),
+        (req, res) => {
+            rockstarService.getRockstarStudentsFromLastPeriod().then(summaryResp => {
+                if (summaryResp.error) return reqUtils.respond(res, null, summaryResp.error);
+                return reqUtils.respond(res, {
+                    code: HTTP_STATUS.OK,
+                    message: "Successfully retrieved rockstars of the period",
+                    data: summaryResp.rockstarChampions
+                });
+            });
+        });
+
+    rockstarRouter.post('/rockstar/transfer-points',
+        body("lrc").notEmpty(),
+        body("student").isEmail().notEmpty(),
+        body("rockstarPeriod").isNumeric().notEmpty(),
+        app.oauth.authorise(), checkRequiredPermissions([LECTURER_ROLE]),
+        (req, res, next) => {
+            reqUtils.validateRequest(req);
+            const championPointsRequest = {
+                lrc: req.body.lrc,
+                student: req.body.student,
+                rockstarPeriod: req.body.rockstarPeriod,
+                lecturer: req.user.email
+            };
+            rockstarService.transferRockstarPointsToRedemptionCenter(championPointsRequest).then(transferResp => {
+                if (transferResp.error) reqUtils.respond(res, null, transferResp.error);
+                else reqUtils.respond(res, {
+                    code: HTTP_STATUS.OK,
+                    message: "successfully transferred points from rockstar account to RedemptionCenter",
+                    data: transferResp.isTransferred
+                });
+            });
+        });
 
     return rockstarRouter;
 };
