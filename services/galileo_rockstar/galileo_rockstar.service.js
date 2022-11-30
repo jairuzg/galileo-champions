@@ -39,7 +39,7 @@ const transferRockstarPointsToRedemptionCenter = async (championPointRequest) =>
     let error, isTransferred;
     const transaction = await orm.transaction();
     try {
-        championPointRequest.points = ROCKSTAR_CHAMPION_POINTS;
+        championPointRequest.points = parseInt(ROCKSTAR_CHAMPION_POINTS);
         championPointRequest.reason = ROCKSTAR_CHAMPION_POINTS_REASON;
         const championPointResp = await assignChampionPoints(championPointRequest);
         if (championPointResp.error) throw championPointResp.error;

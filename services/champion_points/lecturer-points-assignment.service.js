@@ -17,11 +17,11 @@ const assignChampionPoints = async (championPointsRequest) => {
             lrc: championPointsRequest.lrc,
             student: championPointsRequest.student,
             year: appUtils.getCurrentDateObject().year,
-            points: championPointsRequest.points,
+            points: parseInt(championPointsRequest.points),
             reason: championPointsRequest.reason,
             modifiedBy: championPointsRequest.lecturer
         }); else await championPointsModel.update({
-            points: championPointsModel.points + championPointsRequest.points,
+            points: parseInt(championPointsModel.points) + parseInt(championPointsRequest.points),
             reason: championPointsRequest.reason
         });
         if (!championPointsModel) throw new RequestError("There was an error while trying to do the champion points assignment",
